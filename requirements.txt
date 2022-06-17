@@ -1,0 +1,12 @@
+certifi==2022.6.15
+charset-normalizer==2.0.12
+greenlet==1.1.2
+idna==3.3
+instagrapi==1.16.20
+pycryptodomex==3.14.1
+pydantic==1.9.1
+PySocks==1.7.1
+requests==2.28.0
+SQLAlchemy==1.4.37
+typing_extensions==4.2.0
+urllib3==1.26.9
