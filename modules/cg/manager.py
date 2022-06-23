@@ -1,7 +1,8 @@
 from pycoingecko import CoinGeckoAPI
 cg = CoinGeckoAPI()
 
-# btc_price = cg.get_price(ids='bitcoin', vs_currencies='usd')
+btc_price = cg.get_price(ids='bitcoin', vs_currencies='usd')
+print(btc_price)
 
 
 def get_price(coin_id: str, currency: str = "usd") -> int:

@@ -18,34 +18,8 @@ class DeviceSettings(object):
         LOCALE = "en_SK"
         TIMEZONE_OFFSET = 7200
 
-        params = {
-                'app_version': APP_VERSION,
-                'android_version': ANDROID_VERSION,
-                'android_release': ANDROID_RELEASE,
-                'brand': PHONE_MANUFACTURER,
-                'device': PHONE_DEVICE,
-                'model': PHONE_MODEL,
-                'dpi': PHONE_DPI,
-                'resolution': PHONE_RESOLUTION,
-                'chipset': PHONE_CHIPSET,
-                'version_code': VERSION_CODE}
-
         USER_AGENT_FORMAT = \
                 'Instagram {app_version} Android ({android_version:d}/{android_release}; ' \
                 '{dpi}; {resolution}; {brand}; {device}; {model}; {chipset}; en_SK; {version_code})'
 
         USER_AGENT = USER_AGENT_FORMAT.format(**params)
-
-        my_settings = {
-                "user_agent": USER_AGENT,
-                "app_version": APP_VERSION,
-                "android_release": ANDROID_RELEASE,
-                "android_version": ANDROID_VERSION,
-                "phone_manufacturer": PHONE_MANUFACTURER,
-                "phone_device": PHONE_DEVICE,
-                "phone_model": PHONE_MODEL,
-                "phone_dpi": PHONE_DPI,
-                "phone_resolution": PHONE_RESOLUTION,
-                "phone_chipset": PHONE_CHIPSET,
-                "version_code": VERSION_CODE
-        }
