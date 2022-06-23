@@ -85,11 +85,9 @@ class Instagram:
     def __login(self):
         """Establishes connection to Instagram API."""
         # get_settings()	            dict	Return settings dict
-        # set_settings(settings: dict)	bool	Set session settings
+        # set_settings(settings: dict)	    bool	Set session settings
         # load_settings(path: Path)	    dict	Load session settings from file
         # dump_settings(path: Path)	    bool	Serialize and save session settings to file
-
-        custom_settings = self.custom_settings()
 
         cached_settings = Path().cwd() / "cached_settings.json"
 
@@ -102,8 +100,8 @@ class Instagram:
         # else new login and save settings
         else:
             print("New login session.")
-            if custom_settings:
-                self.api = CustomClient(custom_settings)
+            if self.custom_settings():
+                self.api = CustomClient(self.custom_settings())
                 self.api.set_country(DeviceSettings.COUNTRY)
                 self.api.set_locale(DeviceSettings.LOCALE)
                 self.api.set_timezone_offset(DeviceSettings.TIMEZONE_OFFSET)
