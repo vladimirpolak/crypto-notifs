@@ -31,16 +31,16 @@ class CommentModel(Base):
     text = Column(String)
     user_id = Column(Integer, ForeignKey("user.id"))
     user = relationship("UserModel", back_populates="comments")
-    created_at = Column(DateTime)
-    content_type = Column(String)
-    status = Column(String)
+    # created_at = Column(DateTime)
+    # content_type = Column(String)
+    # status = Column(String)
 
-    def __init__(self, pk, text, created_at, content_type, status):
+    def __init__(self, pk, text): # , created_at, content_type, status
         self.pk = pk
         self.text = text
-        self.created_at = created_at
-        self.content_type = content_type
-        self.status = status
+        # self.created_at = created_at
+        # self.content_type = content_type
+        # self.status = status
 
 
 class CoinModel(Base):
