@@ -1,5 +1,6 @@
 from sqlalchemy.orm import sessionmaker
 from modules.db.db_tables import engine, CommentModel, UserModel
+# https://stackoverflow.com/a/16434931
 
 Session = sessionmaker(bind=engine)
 session = Session()
