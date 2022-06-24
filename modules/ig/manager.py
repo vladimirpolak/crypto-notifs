@@ -8,11 +8,10 @@ from instagrapi import Client
 
 from pathlib import Path
 from instagrapi.types import UserShort
-import datetime
-from os import path, getenv
+from os import getenv
 
 try:
-    from .settings import DeviceSettings
+    from modules.ig.settings import DeviceSettings
 except ImportError:
     DeviceSettings = None
     pass
@@ -77,8 +76,8 @@ class CustomClient(Client):
 
 class Instagram:
     def __init__(self):
-        self.username = getenv("IG_USERNAME")
-        self.password = getenv("IG_PASSWORD")
+        self.username = getenv("IG_USERNAME") or "crypto.notifs"
+        self.password = getenv("IG_PASSWORD") or "flourishes1180"
         self.settings_filename = "ig_credentials.json"
         self.__login()
 
@@ -100,8 +99,8 @@ class Instagram:
         # else new login and save settings
         else:
             print("New login session.")
-            if self.custom_settings():
-                self.api = CustomClient(self.custom_settings())
+            if self.custom_settings:
+                self.api = CustomClient(self.custom_settings)
                 self.api.set_country(DeviceSettings.COUNTRY)
                 self.api.set_locale(DeviceSettings.LOCALE)
                 self.api.set_timezone_offset(DeviceSettings.TIMEZONE_OFFSET)
@@ -110,6 +109,7 @@ class Instagram:
 
             self.api.dump_settings(cached_settings)
 
+    @property
     def custom_settings(self):
         """Creates custom device settings for client if provided."""
         if DeviceSettings:
@@ -141,7 +141,7 @@ class Instagram:
 if __name__ == '__main__':
     ig = Instagram()
     # user_id = int(ig.api.user_id_from_username(ig.username))
-    print(ig.api.media_comments(media_id="Ceg76-8PXEm"))
+
     # media_pk = ig.api.media_pk_from_code("Ceg76-8PXEm")
     # comms = ig.api.media_comments(ig.api.media_id(media_pk))
     # print(comms)
@@ -150,8 +150,8 @@ if __name__ == '__main__':
     # media = ig.fetch_posts(user_id=user_id)
 
     # Get comments of specified media
-    # comms = ig.api.media_comments(media_id="2861207262736991941_49645699606")
-    # print(comms)
+    comms = ig.api.media_comments(media_id="2861207262736991941_49645699606")
+    print(comms)
 
     # Send a direct message to a user/list of users
     # ig.api.direct_send(user_ids=[5386485074], text="Bitcoin went under 20.000$!")
