@@ -1,29 +1,27 @@
-from sqlalchemy import create_engine, ForeignKey
-from sqlalchemy import Column, Integer, String, DateTime
-from sqlalchemy.ext.declarative import declarative_base
-from instagrapi.types import Comment
+from sqlalchemy.orm import sessionmaker
+from modules.db.db_tables import engine, CommentModel, UserModel
 
-engine = create_engine('sqlite:///test_db.db', echo=True)
-Base = declarative_base()
+Session = sessionmaker(bind=engine)
+session = Session()
+
+# INSERTING A NEW USER
+# user = UserModel(pk="314319841513519", username="John", fullname="John Doe")
+# session.add(user)
+# session.commit()
+
+# QUERYING FOR A USER
+# q = session.query(UserModel).filter_by(pk="314319841513519")
+# user = q.first()
+
+# INSERTING NEW COMMENT
+# comment = CommentModel(
+#     pk="1415901521512",
+#     text="New comment",
+# )
+# user.comments.append(comment)
+# session.commit()
+
+# GETTING COMMENTS OF A USER
+# print(user.comments[0].pk)
 
 
-class CommentModel(Base):
-    __tablename__ = "Comments"
-
-    id = Column(Integer, primary_key=True)
-    pk = Column(String)
-    text = Column(String)
-    # user = UserModelForeignKey
-    created_at = Column(DateTime)
-    content_type = Column(String)
-    status = Column(String)
-
-    def __init__(self, pk, text, created_at, content_type, status):
-        self.pk = pk
-        self.text = text
-        self.created_at = created_at
-        self.content_type = content_type
-        self.status = status
-
-
-Base.metadata.create_all(engine)
