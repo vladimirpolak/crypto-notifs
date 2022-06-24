@@ -2,7 +2,7 @@ from typing import List
 
 from instagrapi.exceptions import ClientError, ClientNotFoundError, MediaNotFound
 from instagrapi.extractors import extract_comment
-from instagrapi.types import Comment
+from instagrapi.types import Comment, Media
 from dotenv import load_dotenv
 
 from instagrapi import Client
@@ -76,7 +76,7 @@ class CustomClient(Client):
             comments = comments[:amount]
         return comments
 
-    def fetch_posts(self, user_id: int, max_posts=12, step=1):
+    def fetch_posts(self, user_id: int, max_posts=12, step=1) -> List[Media]:
         """Fetch User's posts."""
         media = self.user_medias(user_id=user_id, amount=max_posts)
 
@@ -87,7 +87,7 @@ class Instagram:
     def __init__(self):
         self.username = getenv("IG_USERNAME")
         self.password = getenv("IG_PASSWORD")
-        self.settings_filename = "ig_credentials.json"
+        self.credentials_filename = "ig_credentials.json"
         self.__login()
 
     def __login(self):
@@ -99,13 +99,13 @@ class Instagram:
 
         cached_settings = Path().cwd() / "cached_settings.json"
 
-        # if saved settings, login with saved settings
+        # Login with saved settings
         if cached_settings.exists():
             print("Reusing cached settings.")
             self.api = CustomClient()
             self.api.load_settings(cached_settings)
 
-        # else new login and save settings
+        # Create new login
         else:
             print("New login session.")
             if self.custom_settings:
@@ -118,6 +118,7 @@ class Instagram:
 
             self.api.login(self.username, self.password)
 
+            # Save settings
             self.api.dump_settings(cached_settings)
 
     @property
