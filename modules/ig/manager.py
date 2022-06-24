@@ -3,6 +3,7 @@ from typing import List
 from instagrapi.exceptions import ClientError, ClientNotFoundError, MediaNotFound
 from instagrapi.extractors import extract_comment
 from instagrapi.types import Comment
+from dotenv import load_dotenv
 
 from instagrapi import Client
 
@@ -15,6 +16,8 @@ try:
 except ImportError:
     DeviceSettings = None
     pass
+
+load_dotenv()
 
 
 class CustomClient(Client):
@@ -73,6 +76,12 @@ class CustomClient(Client):
             comments = comments[:amount]
         return comments
 
+    def fetch_posts(self, user_id: int, max_posts=12, step=1):
+        """Fetch User's posts."""
+        media = self.user_medias(user_id=user_id, amount=max_posts)
+
+        return media[::step]
+
 
 class Instagram:
     def __init__(self):
@@ -84,7 +93,7 @@ class Instagram:
     def __login(self):
         """Establishes connection to Instagram API."""
         # get_settings()	            dict	Return settings dict
-        # set_settings(settings: dict)	    bool	Set session settings
+        # set_settings(settings: dict)	bool	Set session settings
         # load_settings(path: Path)	    dict	Load session settings from file
         # dump_settings(path: Path)	    bool	Serialize and save session settings to file
 
@@ -104,6 +113,8 @@ class Instagram:
                 self.api.set_country(DeviceSettings.COUNTRY)
                 self.api.set_locale(DeviceSettings.LOCALE)
                 self.api.set_timezone_offset(DeviceSettings.TIMEZONE_OFFSET)
+            else:
+                self.api = CustomClient()
 
             self.api.login(self.username, self.password)
 
@@ -131,12 +142,6 @@ class Instagram:
             return settings
         return None
 
-    def fetch_posts(self, user_id: int, max_posts=12, step=1):
-        """Fetch User's posts."""
-        media = self.api.user_medias(user_id=user_id, amount=max_posts)
-
-        return media[::step]
-
 
 if __name__ == '__main__':
     ig = Instagram()
@@ -147,7 +152,7 @@ if __name__ == '__main__':
     # print(comms)
 
     # Get user's media
-    # media = ig.fetch_posts(user_id=user_id)
+    # media = ig.api.fetch_posts(user_id=user_id)
 
     # Get comments of specified media
     comms = ig.api.media_comments(media_id="2861207262736991941_49645699606")
