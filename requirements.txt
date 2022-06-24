@@ -3,6 +3,7 @@ charset-normalizer==2.0.12
 greenlet==1.1.2
 idna==3.3
 instagrapi==1.16.20
+Pillow==9.1.1
 pycoingecko==2.2.0
 pycryptodomex==3.14.1
 pydantic==1.9.1
