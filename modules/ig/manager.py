@@ -76,8 +76,8 @@ class CustomClient(Client):
 
 class Instagram:
     def __init__(self):
-        self.username = getenv("IG_USERNAME") or "crypto.notifs"
-        self.password = getenv("IG_PASSWORD") or "flourishes1180"
+        self.username = getenv("IG_USERNAME")
+        self.password = getenv("IG_PASSWORD")
         self.settings_filename = "ig_credentials.json"
         self.__login()
 
