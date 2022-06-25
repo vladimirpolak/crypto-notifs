@@ -4,10 +4,11 @@ from sqlalchemy.orm import relationship
 
 from sqlalchemy.ext.declarative import declarative_base
 
-engine = create_engine('sqlite:///test_db.db')
+engine = create_engine('sqlite:///test_db.db')  # dialect+driver://username:password@host:port/database
 Base = declarative_base()
 
 
+# Table holding information on instagram users that requested tracking
 class UserModel(Base):
     __tablename__ = "user"
 
@@ -23,6 +24,7 @@ class UserModel(Base):
         self.fullname = fullname
 
 
+# Table holding comments that represent conditions for tracking coins
 class CommentModel(Base):
     __tablename__ = "comment"
 
@@ -43,6 +45,7 @@ class CommentModel(Base):
         # self.status = status
 
 
+# Table holding coins that were requested to be tracked
 class CoinModel(Base):
     __tablename__ = "coin"
 
@@ -57,6 +60,7 @@ class CoinModel(Base):
         self.name = name
 
 
+# Table holding currency/price for requested coins
 class PriceModel(Base):
     __tablename__ = "price"
 
