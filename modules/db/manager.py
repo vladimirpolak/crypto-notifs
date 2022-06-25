@@ -79,7 +79,8 @@ class Database:
 
         :param new_user: UserShort
             (Instagrapi class)
-        :return: UserModel class representing database entry
+        :return: UserModel
+            class representing database entry
         """
         # Check if user is not already in the database
         user = self.get_user(pk=new_user.pk)
@@ -102,7 +103,8 @@ class Database:
 
         :param new_comment: Comment
             (Instagrapi class)
-        :return: CommentModel class representing database entry
+        :return: CommentModel
+            class representing database entry
         """
         # Check if user is not already in the database
         comm = self.get_comment(pk=new_comment.pk)
