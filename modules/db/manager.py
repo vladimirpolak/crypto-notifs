@@ -35,14 +35,10 @@ class Database:
         """
         Get single comment
 
-        Parameters
-        ----------
-        pk: str
+        :param pk: str
             Unique identifier of a comment
 
-        Returns
-        -------
-        CommentModel
+        :return: CommentModel
             Class containing comment's information
         """
         return self.session.query(CommentModel).filter_by(pk=pk, **kwargs).first()
@@ -51,14 +47,10 @@ class Database:
         """
         Get single user
 
-        Parameters
-        ----------
-        pk: str
+        :param pk: str
             Unique identifier of a user
 
-        Returns
-        -------
-        UserModel
+        :return: UserModel
             Class containing user's information
         """
         return self.session.query(UserModel).filter_by(pk=pk, **kwargs).first()
@@ -85,11 +77,12 @@ class Database:
         """
         Used for inserting a user into database.
 
-        :param new_user: UserShort (instagrapi class)
+        :param new_user: UserShort
+            (Instagrapi class)
         :return: UserModel class representing database entry
         """
         # Check if user is not already in the database
-        user = self.session.query(UserModel).filter_by(pk=new_user.pk).first()
+        user = self.get_user(pk=new_user.pk)
 
         if not user:
             # Create new user
@@ -107,11 +100,12 @@ class Database:
         """
         Used for inserting a comment into database.
 
-        :param new_comment: Comment (instagrapi class)
+        :param new_comment: Comment
+            (Instagrapi class)
         :return: CommentModel class representing database entry
         """
         # Check if user is not already in the database
-        comm = self.session.query(CommentModel).filter_by(pk=new_comment.pk).first()
+        comm = self.get_comment(pk=new_comment.pk)
 
         if not comm:
 
