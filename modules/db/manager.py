@@ -39,7 +39,6 @@ class Database:
         ----------
         pk: str
             Unique identifier of a comment
-        **kwargs
 
         Returns
         -------
@@ -56,7 +55,6 @@ class Database:
         ----------
         pk: str
             Unique identifier of a user
-        **kwargs
 
         Returns
         -------
