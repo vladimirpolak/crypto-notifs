@@ -68,11 +68,11 @@ class PriceModel(Base):
     coin_id = Column(Integer, ForeignKey("coin.id"))
     coin = relationship("CoinModel", back_populates="prices")
     currency = Column(String)
-    price = Column(Integer)
+    value = Column(Integer)
 
-    def __init__(self, currency, price):
+    def __init__(self, currency, value):
         self.currency = currency
-        self.price = price
+        self.value = value
 
 
 if __name__ == '__main__':
