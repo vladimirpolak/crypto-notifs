@@ -1,5 +1,6 @@
 from sqlalchemy.orm import sessionmaker
 from instagrapi.types import Comment, UserShort
+from modules.cg.models import Coin, Price
 from typing import List
 from modules.db.db_tables import engine, CommentModel, UserModel, CoinModel, PriceModel
 # https://stackoverflow.com/a/16434931
@@ -31,6 +32,7 @@ class Database:
     def __init__(self, session):
         self.session = session
 
+    # ----------------------- Users/Comments -----------------------
     def get_comment(self, pk, **kwargs) -> CommentModel:
         """
         Get single comment
@@ -127,27 +129,28 @@ class Database:
 
         return comm
 
-    def insert_new_coin(self, name, symbol) -> CoinModel:
+    # ----------------------- Coins/Prices -----------------------
+    def insert_new_coin(self, new_coin) -> CoinModel:
         """
         Used for inserting a new coin into database.
 
         :return: CoinModel
         """
         # Check if coin is not already in the database
-        coin = self.get_coin(symbol=symbol)
+        coin = self.get_coin(symbol=new_coin.symbol)
 
         if not coin:
             # Create new user
             coin = CoinModel(
-                symbol=symbol,
-                name=name,
+                symbol=new_coin.symbol,
+                name=new_coin.name,
             )
             self.session.add(coin)
             self.session.commit()
 
         return coin
 
-    def insert_price(self) -> PriceModel:
+    def insert_price(self, coin_symbol: str, price: int, currency: str) -> PriceModel:
         """
         Used for inserting/updating a coin price into database.
 
@@ -171,13 +174,13 @@ class Database:
         """
         pass
 
-    def get_coin_price(self):
-        """
-        Used to fetch a coin's price from database.
-
-        :return: PriceModel
-        """
-        pass
+    # def get_coin_price(self):
+    #     """
+    #     Used to fetch a coin's price from database.
+    #
+    #     :return: PriceModel
+    #     """
+    #     pass
 
 
 if __name__ == '__main__':

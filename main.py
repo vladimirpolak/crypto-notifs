@@ -4,6 +4,7 @@
 #   for every comment
 #       add user if is new
 #       verify comment
+#       [a-z]+?[<>][0-9]+?
 #       add comment to the user if is new
 
 # get prices of the requested coins in db + save prices to db
