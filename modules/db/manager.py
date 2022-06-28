@@ -1,7 +1,7 @@
 from sqlalchemy.orm import sessionmaker
 from instagrapi.types import Comment, UserShort
 from typing import List
-from modules.db.db_tables import engine, CommentModel, UserModel
+from modules.db.db_tables import engine, CommentModel, UserModel, CoinModel, PriceModel
 # https://stackoverflow.com/a/16434931
 
 # INSERTING A NEW USER
@@ -126,6 +126,58 @@ class Database:
             self.session.commit()
 
         return comm
+
+    def insert_new_coin(self, name, symbol) -> CoinModel:
+        """
+        Used for inserting a new coin into database.
+
+        :return: CoinModel
+        """
+        # Check if coin is not already in the database
+        coin = self.get_coin(symbol=symbol)
+
+        if not coin:
+            # Create new user
+            coin = CoinModel(
+                symbol=symbol,
+                name=name,
+            )
+            self.session.add(coin)
+            self.session.commit()
+
+        return coin
+
+    def insert_price(self) -> PriceModel:
+        """
+        Used for inserting/updating a coin price into database.
+
+         :return: PriceModel
+        """
+        pass
+
+    def get_coin(self, symbol, **kwargs) -> CoinModel:
+        """
+        Used to fetch a coin info from database.
+
+        :return: CoinModel
+        """
+        pass
+
+    def get_coins(self) -> List[CoinModel]:
+        """
+        Used to fetch a list of coins from database.
+
+        :return: list of CoinModel classes
+        """
+        pass
+
+    def get_coin_price(self):
+        """
+        Used to fetch a coin's price from database.
+
+        :return: PriceModel
+        """
+        pass
 
 
 if __name__ == '__main__':
