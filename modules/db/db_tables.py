@@ -50,13 +50,13 @@ class CoinModel(Base):
     __tablename__ = "coin"
 
     id = Column(Integer, primary_key=True)
-    code = Column(String, unique=True)
-    name = Column(String)
+    symbol = Column(String, unique=True)
+    name = Column(String, unique=True)
     prices = relationship("PriceModel", back_populates="coin")
     last_updated = Column(DateTime)
 
-    def __init__(self, code, name):
-        self.code = code
+    def __init__(self, symbol, name):
+        self.symbol = symbol
         self.name = name
 
 
