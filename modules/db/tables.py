@@ -1,11 +1,16 @@
 from sqlalchemy import ForeignKey, create_engine
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
+from modules.db.manager import db_path
 
 from sqlalchemy.ext.declarative import declarative_base
 
-engine = create_engine('sqlite:///test_db.db')  # dialect+driver://username:password@host:port/database
+engine = create_engine(f'sqlite:///{db_path}')  # dialect+driver://username:password@host:port/database
 Base = declarative_base()
+
+
+def create_db():
+    Base.metadata.create_all(engine)
 
 
 # Table holding information on instagram users that requested tracking

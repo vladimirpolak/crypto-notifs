@@ -1,8 +1,9 @@
 from sqlalchemy.orm import sessionmaker, Session
 from instagrapi.types import Comment, UserShort
 from modules.cg.models import Coin, Price
+from pathlib import Path
 from typing import List
-from modules.db.tables import engine, CommentModel, UserModel, CoinModel, PriceModel
+from modules.db.tables import engine, CommentModel, UserModel, CoinModel, PriceModel, create_db
 # https://stackoverflow.com/a/16434931
 
 # INSERTING A NEW USER
@@ -27,6 +28,9 @@ from modules.db.tables import engine, CommentModel, UserModel, CoinModel, PriceM
 # print(session.query(CommentModel).filter_by(pk="4109").first().user.username)
 # print(session.query(CommentModel).all())
 
+db_name = "test_db.db"
+db_path = Path().cwd() /db_name
+
 
 def my_session():
     s = sessionmaker(bind=engine)
@@ -36,6 +40,10 @@ def my_session():
 class Database:
     def __init__(self, session: Session = my_session()):
         self.session = session
+
+        # Creates new database if one doesn't exist
+        if not db_path.exists():
+            create_db()
 
     # ----------------------- Users/Comments -----------------------
     def get_comment(self, pk, **kwargs) -> CommentModel:
@@ -135,7 +143,7 @@ class Database:
         return comm
 
     # ----------------------- Coins/Prices -----------------------
-    def insert_new_coin(self, new_coin) -> CoinModel:
+    def insert_new_coin(self, new_coin: Coin) -> CoinModel:
         """
         Used for inserting a new coin into database.
 
@@ -145,7 +153,7 @@ class Database:
         coin = self.get_coin(symbol=new_coin.symbol)
 
         if not coin:
-            # Create new user
+            # Create new coin
             coin = CoinModel(
                 symbol=new_coin.symbol,
                 name=new_coin.name,
@@ -155,12 +163,28 @@ class Database:
 
         return coin
 
-    def insert_price(self, coin_symbol: str, price: int, currency: str) -> PriceModel:
+    def insert_price(self, coin_symbol: str, price: Price) -> PriceModel:
         """
         Used for inserting/updating a coin price into database.
 
          :return: PriceModel
         """
+        raise NotImplementedError
+        # TODO
+        # # Check if price is not already in the database
+        # coin = self.get_price(symbol=coin_symbol)
+        # self.session.query(PriceModel).filter_by(currency=currency, coin__symbol=coin_symbol)
+        #
+        # if not coin:
+        #     # Create new user
+        #     coin = CoinModel(
+        #         symbol=new_coin.symbol,
+        #         name=new_coin.name,
+        #     )
+        #     self.session.add(coin)
+        #     self.session.commit()
+        #
+        # return coin
         pass
 
     def get_coin(self, symbol, **kwargs) -> CoinModel:
@@ -169,7 +193,7 @@ class Database:
 
         :return: CoinModel
         """
-        pass
+        return self.session.query(CoinModel).filter_by(symbol=symbol, **kwargs).first()
 
     def get_coins(self) -> List[CoinModel]:
         """
