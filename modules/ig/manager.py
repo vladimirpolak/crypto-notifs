@@ -84,10 +84,12 @@ class CustomClient(Client):
 
 
 class Instagram:
-    def __init__(self):
-        self.username = getenv("IG_USERNAME")
-        self.password = getenv("IG_PASSWORD")
-        self.credentials_filename = "ig_credentials.json"
+    def __init__(self,
+                 ig_username: str = None,
+                 ig_password: str = None
+                 ):
+        self.username = ig_username or getenv("IG_USERNAME")
+        self.password = ig_password or getenv("IG_PASSWORD")
         self.__login()
 
     def __login(self):
