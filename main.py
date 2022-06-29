@@ -6,12 +6,16 @@ import json
 
 
 class CryptoNotifs:
-    def __init__(self, coingecko, database, instagram):
+    def __init__(self, coingecko: CoinGecko,
+                 database: Database,
+                 instagram: Instagram
+                 ):
         self.cg = coingecko
         self.db = database
         self.ig = instagram
 
     def main(self):
+        self.init_coins()
         # get comments/users from post and save to db
         #   request first 12 posts
         #   request all comments of 1st post
@@ -36,6 +40,21 @@ class CryptoNotifs:
         #   get existing thread for user or create new dm
         pass
 
+    def init_coins(self):
+        # Request detailed coins info from coingecko
+        coins = self.cg.get_detailed_coins()
+
+        for coin in coins:
+
+            # Add every coin and it's prices to database
+            self.db.insert_new_coin(coin)
+            for price in coin.price:
+                self.db.insert_price(
+                    coin_symbol=coin.symbol,
+                    price=price
+                )
+        pass
+
 
 if __name__ == '__main__':
     # CoinGecko API init
@@ -52,4 +71,5 @@ if __name__ == '__main__':
     # Instagram API init
     ig = Instagram(**ig_credentials)
 
-    cn = CryptoNotifs(cg, db, ig)
+    crypto_notifs = CryptoNotifs(cg, db, ig)
+    crypto_notifs.main()
