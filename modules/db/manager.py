@@ -1,4 +1,4 @@
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 from instagrapi.types import Comment, UserShort
 from modules.cg.models import Coin, Price
 from typing import List
@@ -28,8 +28,13 @@ from modules.db.tables import engine, CommentModel, UserModel, CoinModel, PriceM
 # print(session.query(CommentModel).all())
 
 
+def my_session():
+    s = sessionmaker(bind=engine)
+    return s()
+
+
 class Database:
-    def __init__(self, session):
+    def __init__(self, session: Session = my_session()):
         self.session = session
 
     # ----------------------- Users/Comments -----------------------
@@ -184,7 +189,4 @@ class Database:
 
 
 if __name__ == '__main__':
-    Session = sessionmaker(bind=engine)
-    session = Session()
-
-    db = Database(session)
+    db = Database()
