@@ -2,7 +2,7 @@ from sqlalchemy.orm import sessionmaker
 from instagrapi.types import Comment, UserShort
 from modules.cg.models import Coin, Price
 from typing import List
-from modules.db.db_tables import engine, CommentModel, UserModel, CoinModel, PriceModel
+from modules.db.tables import engine, CommentModel, UserModel, CoinModel, PriceModel
 # https://stackoverflow.com/a/16434931
 
 # INSERTING A NEW USER
