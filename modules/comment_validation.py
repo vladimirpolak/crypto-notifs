@@ -13,6 +13,9 @@ class CommentData:
         self.value = value
         self.currency = currency or None
 
+    def __str__(self):
+        return f"{self.coin_symbol} {self.condition} {self.value} {self.currency or ''}"
+
 
 def verify_comment(comment: str) -> re.Match:
     """
