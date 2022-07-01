@@ -82,11 +82,6 @@ class CryptoNotifs:
                 self.db.insert_user(comment.user)
                 self.db.insert_comment(comment)
 
-    @property
-    def all_requests(self) -> list:
-        comments = self.db.get_all_comments()
-        return [verify_comment(comment.text) for comment in comments]
-
 
 if __name__ == '__main__':
     # CoinGecko API init

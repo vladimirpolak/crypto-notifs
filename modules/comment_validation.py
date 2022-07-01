@@ -1,7 +1,20 @@
 import re
 
 
-def verify_comment(comment: str) -> tuple:
+class CommentData:
+    def __init__(self,
+                 coin_symbol: str,
+                 condition: str,
+                 value: int,
+                 currency: str
+                 ):
+        self.coin_symbol = coin_symbol
+        self.condition = condition
+        self.value = value
+        self.currency = currency or None
+
+
+def verify_comment(comment: str) -> re.Match:
     """
     Validates the input comment against the required formatting.
 
@@ -14,14 +27,20 @@ def verify_comment(comment: str) -> tuple:
     return match
 
 
-def extract_data(comment) -> tuple:
+def extract_data(comment) -> CommentData:
     """
     Used to extract data from comment.
 
-    :return: (coin_symbol, condition, target_value, currency(Optional))
+    :return: CommentData class
     """
     pattern = re.compile("([a-z]+?)([<>])([0-9]+)([a-z]+)?")
-    return re.findall(pattern, comment)[0]
+    data = re.findall(pattern, comment)[0]
+    return CommentData(
+        coin_symbol=data[0],
+        condition=data[1],
+        value=data[2],
+        currency=data[3]
+    )
 
 
 if __name__ == '__main__':

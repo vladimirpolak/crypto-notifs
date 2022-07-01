@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import ForeignKey
-from modules.comment_validation import extract_data
+from modules.comment_validation import extract_data, CommentData
 
 
 Base = declarative_base()
@@ -45,7 +45,7 @@ class CommentModel(Base):
         self.status = status
 
     @property
-    def data(self):
+    def data(self) -> CommentData:
         return extract_data(self.text)
 
 
