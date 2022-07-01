@@ -120,9 +120,9 @@ class Database:
             comm = CommentModel(
                 pk=new_comment.pk,
                 text=new_comment.text,
-                # created_at=new_comment.created_at_utc,
-                # content_type=new_comment.content_type,
-                # status=new_comment.status
+                created_at=new_comment.created_at_utc,
+                content_type=new_comment.content_type,
+                status=new_comment.status
             )
             user.comments.append(comm)
             self.session.commit()

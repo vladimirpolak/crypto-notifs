@@ -1,6 +1,7 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy import Column, Integer, String, DateTime, Float
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -31,16 +32,16 @@ class CommentModel(Base):
     text = Column(String)
     user_id = Column(Integer, ForeignKey("user.id"))
     user = relationship("UserModel", back_populates="comments")
-    # created_at = Column(DateTime)
-    # content_type = Column(String)
-    # status = Column(String)
+    created_at = Column(DateTime)
+    content_type = Column(String)
+    status = Column(String)
 
-    def __init__(self, pk, text): # , created_at, content_type, status
+    def __init__(self, pk, text, created_at, content_type, status):
         self.pk = pk
         self.text = text
-        # self.created_at = created_at
-        # self.content_type = content_type
-        # self.status = status
+        self.created_at = created_at
+        self.content_type = content_type
+        self.status = status
 
 
 # Table holding coins that were requested to be tracked
@@ -51,7 +52,6 @@ class CoinModel(Base):
     symbol = Column(String, unique=True)
     name = Column(String, unique=True)
     prices = relationship("PriceModel", back_populates="coin")
-    last_updated = Column(DateTime)
 
     def __init__(self, symbol, name):
         self.symbol = symbol
@@ -67,6 +67,7 @@ class PriceModel(Base):
     coin = relationship("CoinModel", back_populates="prices")
     currency = Column(String)
     value = Column(Float)
+    last_updated = Column(DateTime)
 
     def __init__(self, currency, value):
         self.currency = currency
