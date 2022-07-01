@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 class Price(BaseModel):
     currency: str
-    value: int
+    value: float
 
 
 class Coin(BaseModel):
