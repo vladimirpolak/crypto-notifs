@@ -1,16 +1,9 @@
-from sqlalchemy import ForeignKey, create_engine
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, Float
 from sqlalchemy.orm import relationship
-from modules.db.manager import db_path
-
 from sqlalchemy.ext.declarative import declarative_base
 
-engine = create_engine(f'sqlite:///{db_path}')  # dialect+driver://username:password@host:port/database
 Base = declarative_base()
-
-
-def create_db():
-    Base.metadata.create_all(engine)
 
 
 # Table holding information on instagram users that requested tracking
@@ -73,12 +66,8 @@ class PriceModel(Base):
     coin_id = Column(Integer, ForeignKey("coin.id"))
     coin = relationship("CoinModel", back_populates="prices")
     currency = Column(String)
-    value = Column(Integer)
+    value = Column(Float)
 
     def __init__(self, currency, value):
         self.currency = currency
         self.value = value
-
-
-if __name__ == '__main__':
-    Base.metadata.create_all(engine)

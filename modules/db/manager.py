@@ -1,35 +1,22 @@
+from modules.db.tables import CommentModel, UserModel, CoinModel, PriceModel, Base
 from sqlalchemy.orm import sessionmaker, Session
 from instagrapi.types import Comment, UserShort
 from modules.cg.models import Coin, Price
 from pathlib import Path
 from typing import List
-from modules.db.tables import engine, CommentModel, UserModel, CoinModel, PriceModel, create_db
+
+from sqlalchemy import create_engine
+
 # https://stackoverflow.com/a/16434931
 
-# INSERTING A NEW USER
-# user = UserModel(pk="314311414519", username="John", fullname="John Doe")
-# session.add(user)
-# session.commit()
-
-# QUERYING FOR A USER
-# user = session.query(UserModel).filter_by(pk="124").first()
-# print(user.fullname)
-
-# INSERTING NEW COMMENT
-# comment = CommentModel(
-#     pk="4109",
-#     text="Novy Koment",
-# )
-# user.comments.append(comment)
-# session.commit()
-
-# GETTING COMMENTS OF A USER
-# print(user.comments[0].pk)
-# print(session.query(CommentModel).filter_by(pk="4109").first().user.username)
-# print(session.query(CommentModel).all())
-
 db_name = "test_db.db"
-db_path = Path().cwd() /db_name
+db_path = Path().cwd() / db_name
+
+engine = create_engine(f'sqlite:///{db_path}')  # dialect+driver://username:password@host:port/database
+
+
+def create_db():
+    Base.metadata.create_all(engine)
 
 
 def my_session():
@@ -153,6 +140,7 @@ class Database:
         coin = self.get_coin(symbol=new_coin.symbol)
 
         if not coin:
+            print(f"Inserting new coin: {new_coin.name}")
             # Create new coin
             coin = CoinModel(
                 symbol=new_coin.symbol,
@@ -163,29 +151,40 @@ class Database:
 
         return coin
 
-    def insert_price(self, coin_symbol: str, price: Price) -> PriceModel:
+    def insert_price(self, coin_symbol: str, new_price: Price) -> PriceModel:
         """
         Used for inserting/updating a coin price into database.
 
          :return: PriceModel
         """
-        raise NotImplementedError
-        # TODO
-        # # Check if price is not already in the database
-        # coin = self.get_price(symbol=coin_symbol)
-        # self.session.query(PriceModel).filter_by(currency=currency, coin__symbol=coin_symbol)
-        #
-        # if not coin:
-        #     # Create new user
-        #     coin = CoinModel(
-        #         symbol=new_coin.symbol,
-        #         name=new_coin.name,
-        #     )
-        #     self.session.add(coin)
-        #     self.session.commit()
-        #
-        # return coin
-        pass
+        # Get the corresponding coin from the database
+        coin = self.get_coin(symbol=coin_symbol)
+
+        # Create new price's model
+        price = PriceModel(
+            currency=new_price.currency,
+            value=new_price.value
+        )
+
+        # Update an existing price
+        for p in coin.prices:
+            if p.currency == price.currency:
+
+                # If new price is same as the one already in database
+                if p.value == price.value:
+                    print(f"Price for {coin.name} didn't change. ({p.value}{p.currency})")
+                    return p
+
+                print(f"Updating price for {coin.name}: {p.value}{p.currency} -> {price.value}{price.currency}.")
+                p.value = price.value
+                self.session.commit()
+                return p
+
+        # Insert new price since it didn't exist already
+        print(f"Inserting new price for {coin.name}: {price.value}{price.currency}.")
+        coin.prices.append(price)
+        self.session.commit()
+        return price
 
     def get_coin(self, symbol, **kwargs) -> CoinModel:
         """
@@ -201,15 +200,7 @@ class Database:
 
         :return: list of CoinModel classes
         """
-        pass
-
-    # def get_coin_price(self):
-    #     """
-    #     Used to fetch a coin's price from database.
-    #
-    #     :return: PriceModel
-    #     """
-    #     pass
+        return self.session.query(CoinModel).all()
 
 
 if __name__ == '__main__':
