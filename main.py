@@ -23,7 +23,7 @@ class CryptoNotifs:
             self.init_coins()
 
         # TODO  instagram comments will have to be updated in a larger
-        # TODO  time periods than coin prices to avoid being flagged by IG.
+        #       time periods than coin prices to avoid being flagged by IG.
         self.get_instagram_comments()
 
         # get prices of the requested coins in db + save prices to db
@@ -64,6 +64,9 @@ class CryptoNotifs:
         pass
 
     def get_instagram_comments(self):
+        """
+        Get comments of an instagram post that holds targetted comments.
+        """
         # Get first item of user's media (pinned post is first)
         post = self.ig.api.user_medias(self.ig.api.user_id)[0]
         # Extract comments
