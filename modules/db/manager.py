@@ -186,13 +186,13 @@ class Database:
         self.session.commit()
         return price
 
-    def get_coin(self, symbol, **kwargs) -> CoinModel:
+    def get_coin(self, **kwargs) -> CoinModel:
         """
         Used to fetch a coin info from database.
 
         :return: CoinModel
         """
-        return self.session.query(CoinModel).filter_by(symbol=symbol, **kwargs).first()
+        return self.session.query(CoinModel).filter_by(**kwargs).first()
 
     def get_coins(self) -> List[CoinModel]:
         """
