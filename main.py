@@ -22,9 +22,6 @@ class CryptoNotifs:
             # Get info for all coins
             self.init_coins()
 
-        print(self.all_requests)
-        exit()
-
         # TODO  instagram comments will have to be updated in a larger
         # TODO  time periods than coin prices to avoid being flagged by IG.
         self.get_instagram_comments()
