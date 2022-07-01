@@ -1,16 +1,13 @@
-from typing import List
-
 from instagrapi.exceptions import ClientError, ClientNotFoundError, MediaNotFound
 from instagrapi.extractors import extract_comment
 from instagrapi.types import Comment, Media
 from dotenv import load_dotenv
-
 from instagrapi import Client
-
+from typing import List
 from pathlib import Path
-from instagrapi.types import UserShort
 from os import getenv
-
+import random
+import time
 try:
     from modules.ig.settings import DeviceSettings
 except ImportError:
@@ -51,7 +48,8 @@ class CustomClient(Client):
         get_comments()
         while ((result.get("has_more_comments") and result.get("next_max_id"))
                or (result.get("has_more_headload_comments") and result.get("next_min_id"))):
-            # TODO: Add a short delay here
+            # -----------DELAY--------------
+            time.sleep(random.uniform(4, 7))
             try:
                 if result.get("has_more_comments"):
                     params = {"max_id": result.get("next_max_id")}
@@ -103,13 +101,13 @@ class Instagram:
 
         # Login with saved settings
         if cached_settings.exists():
-            print("Reusing cached settings.")
+            print("[IG] Reusing cached settings.")
             self.api = CustomClient()
             self.api.load_settings(cached_settings)
 
         # Create new login
         else:
-            print("New login session.")
+            print("[IG] New login session.")
             if self.custom_settings:
                 self.api = CustomClient(self.custom_settings)
                 self.api.set_country(DeviceSettings.COUNTRY)
@@ -144,25 +142,3 @@ class Instagram:
             }
             return settings
         return None
-
-
-if __name__ == '__main__':
-    ig = Instagram()
-    # user_id = int(ig.api.user_id_from_username(ig.username))
-
-    # media_pk = ig.api.media_pk_from_code("Ceg76-8PXEm")
-    # comms = ig.api.media_comments(ig.api.media_id(media_pk))
-    # print(comms)
-
-    # Get user's media
-    # media = ig.api.fetch_posts(user_id=user_id)
-
-    # Get comments of specified media
-    comms = ig.api.media_comments(media_id="2861207262736991941_49645699606")
-    print(comms)
-
-    # Send a direct message to a user/list of users
-    # ig.api.direct_send(user_ids=[5386485074], text="Bitcoin went under 20.000$!")
-
-    # Delete media comments
-    # ig.api.comment_bulk_delete()
