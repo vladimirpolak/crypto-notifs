@@ -3,25 +3,25 @@ import re
 
 def verify_comment(comment: str) -> tuple:
     """
+    Validates the input comment against the required formatting.
 
     :param comment: string
-    :return: tuple (crypto_coin_symbol,
-                    condition (</>),
-                    target_value,
-                    currency (optional, None if not specified)
+    :return: Match or None
     """
-    pattern = re.compile("([a-z]+?)([<>])([0-9]+)([a-z]+)?")
+    pattern = re.compile("[a-z]+?[<>][0-9]+([a-z]+)?")
     match = re.match(pattern, comment)
 
-    if not match:
-        return None
+    return match
 
-    # Extract values
-    coin_symbol = match.group(1)
-    condition = match.group(2)
-    value = int(match.group(3))
-    currency = match.group(4)
-    return coin_symbol, condition, value, currency
+
+def extract_data(comment) -> tuple:
+    """
+    Used to extract data from comment.
+
+    :return: (coin_symbol, condition, target_value, currency(Optional))
+    """
+    pattern = re.compile("([a-z]+?)([<>])([0-9]+)([a-z]+)?")
+    return re.findall(pattern, comment)[0]
 
 
 if __name__ == '__main__':

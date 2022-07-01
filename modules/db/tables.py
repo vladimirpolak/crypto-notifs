@@ -1,14 +1,15 @@
-from sqlalchemy import ForeignKey
 from sqlalchemy import Column, Integer, String, DateTime, Float
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
+from sqlalchemy import ForeignKey
+from modules.comment_validation import extract_data
+
 
 Base = declarative_base()
 
 
-# Table holding information on instagram users that requested tracking
 class UserModel(Base):
+    """Instagram user model."""
     __tablename__ = "user"
 
     id = Column(Integer, primary_key=True)
@@ -23,8 +24,8 @@ class UserModel(Base):
         self.fullname = fullname
 
 
-# Table holding comments that represent conditions for tracking coins
 class CommentModel(Base):
+    """Instagram comment model."""
     __tablename__ = "comment"
 
     id = Column(Integer, primary_key=True)
@@ -43,9 +44,13 @@ class CommentModel(Base):
         self.content_type = content_type
         self.status = status
 
+    @property
+    def data(self):
+        return extract_data(self.text)
 
-# Table holding coins that were requested to be tracked
+
 class CoinModel(Base):
+    """Crypto coin model."""
     __tablename__ = "coin"
 
     id = Column(Integer, primary_key=True)
@@ -58,8 +63,8 @@ class CoinModel(Base):
         self.name = name
 
 
-# Table holding currency/price for requested coins
 class PriceModel(Base):
+    """Crypto coin's price model."""
     __tablename__ = "price"
 
     id = Column(Integer, primary_key=True)
