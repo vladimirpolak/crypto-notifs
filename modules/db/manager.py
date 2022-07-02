@@ -108,12 +108,12 @@ class Database:
         :return: CommentModel
             class representing database entry
         """
-        # Check if user is not already in the database
+        # Check if comment is not already in the database
         comm = self.get_comment(pk=new_comment.pk)
 
         if not comm:
 
-            # Get comment's user
+            # Create/Get comment's user
             user = self.insert_user(new_comment.user)
 
             # Create new comment
@@ -140,7 +140,7 @@ class Database:
         coin = self.get_coin(symbol=new_coin.symbol)
 
         if not coin:
-            print(f"Inserting new coin: {new_coin.name}")
+            print(f"[DB] Inserting new coin: {new_coin.name}")
             # Create new coin
             coin = CoinModel(
                 symbol=new_coin.symbol,
@@ -172,16 +172,16 @@ class Database:
 
                 # If new price is same as the one already in database
                 if p.value == price.value:
-                    print(f"Price for {coin.name} didn't change. ({p.value}{p.currency})")
+                    print(f"[DB] Price for {coin.name} didn't change. ({p.value}{p.currency})")
                     return p
 
-                print(f"Updating price for {coin.name}: {p.value}{p.currency} -> {price.value}{price.currency}.")
+                print(f"[DB] Updating price for {coin.name}: {p.value}{p.currency} -> {price.value}{price.currency}.")
                 p.value = price.value
                 self.session.commit()
                 return p
 
         # Insert new price since it didn't exist already
-        print(f"Inserting new price for {coin.name}: {price.value}{price.currency}.")
+        print(f"[DB] Inserting new price for {coin.name}: {price.value}{price.currency}.")
         coin.prices.append(price)
         self.session.commit()
         return price
