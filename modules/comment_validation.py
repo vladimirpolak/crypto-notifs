@@ -11,7 +11,7 @@ class CommentData:
         self.coin_symbol = coin_symbol
         self.condition = condition
         self.value = value
-        self.currency = currency or None
+        self.currency = currency or "usd" # default currency is usd
 
     def __str__(self):
         return f"{self.coin_symbol} {self.condition} {self.value} {self.currency or ''}"
