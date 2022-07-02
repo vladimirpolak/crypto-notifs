@@ -30,7 +30,14 @@ class CryptoNotifs:
         #   get all requested prices from database
         #   request price for all coins
         #   add prices to database
+
         comments = self.db.get_all_comments()
+        # TODO Need to extract coin name instead of coin symbol
+        coins_requested = [comment.data.coin_symbol for comment in comments]
+        currencies_requested = [comment.data.currency for comment in comments]
+
+        r = self.cg.get_price(ids=coins_requested, vs_currencies=currencies_requested)
+        print(r)
 
         # check if any desired condition is met
         #   get all price requests from db
@@ -75,12 +82,12 @@ class CryptoNotifs:
 
         for comment in comments:
             # Validate comment
-            comm_info = verify_comment(comment.text)
-
-            # If valid, add comment/user to database
-            if comm_info:
+            if verify_comment(comment.text):
                 self.db.insert_user(comment.user)
                 self.db.insert_comment(comment)
+            else:
+                # TODO Delete the comment
+                pass
 
 
 if __name__ == '__main__':
