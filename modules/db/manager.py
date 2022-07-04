@@ -4,6 +4,8 @@ from instagrapi.types import Comment, UserShort
 from modules.cg.models import Coin, Price
 from pathlib import Path
 from typing import List
+from modules.exceptions import CommentValidationError
+from modules.comment_validation import extract_data, verify_comment
 
 from sqlalchemy import create_engine
 
@@ -116,10 +118,22 @@ class Database:
             # Create/Get comment's user
             user = self.insert_user(new_comment.user)
 
+            if not verify_comment(new_comment.text):
+                raise CommentValidationError
+
+            comm_data = extract_data(new_comment.text)
+            coin = self.get_coin(symbol=comm_data[0])
+            if not coin:
+                raise CommentValidationError
+
             # Create new comment
             comm = CommentModel(
                 pk=new_comment.pk,
                 text=new_comment.text,
+                coin=coin,
+                condition=comm_data[1],
+                target_value=comm_data[2],
+                currency=comm_data[3],
                 created_at=new_comment.created_at_utc,
                 content_type=new_comment.content_type,
                 status=new_comment.status
