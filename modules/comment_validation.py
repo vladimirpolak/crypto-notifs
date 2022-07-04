@@ -20,8 +20,13 @@ def extract_data(comment) -> tuple:
 
     :return: CommentData class
     """
-    pattern = re.compile("([a-z]+?)([<>])([0-9]+)([a-z]+)?")
-    return re.findall(pattern, comment)[0]
+    pattern = re.compile("([a-zA-Z]+?)([<>])([0-9]+)([a-zA-Z]+)?")
+    data = re.findall(pattern, comment)[0]
+    coin_symbol = data[0]
+    condition = data[1]
+    target_value = data[2]
+    currency = data[3]
+    return coin_symbol, condition, target_value, currency
 
 
 if __name__ == '__main__':
