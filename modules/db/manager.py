@@ -171,14 +171,14 @@ class Database:
 
         return coin
 
-    def insert_price(self, coin_symbol: str, new_price: Price) -> PriceModel:
+    def insert_price(self, coin: CoinModel, new_price: Price) -> PriceModel:
         """
         Used for inserting/updating a coin price into database.
 
          :return: PriceModel
         """
-        # Get the corresponding coin from the database
-        coin = self.get_coin(symbol=coin_symbol)
+        # # Get the corresponding coin from the database
+        # coin = self.get_coin(symbol=coin_symbol)
 
         # Create new price's model
         price = PriceModel(
