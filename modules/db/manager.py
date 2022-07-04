@@ -22,7 +22,7 @@ def create_db():
 
 
 def my_session():
-    s = sessionmaker(bind=engine)
+    s = sessionmaker(bind=engine, autoflush=False)
     return s()
 
 
@@ -139,7 +139,7 @@ class Database:
                 coin=coin,
                 condition=condition,
                 target_value=target_value,
-                currency=currency,
+                currency=req_currency,
                 created_at=new_comment.created_at_utc,
                 content_type=new_comment.content_type,
                 status=new_comment.status
