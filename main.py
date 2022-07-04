@@ -2,7 +2,9 @@ from modules.comment_validation import verify_comment
 from modules.cg.manager import CoinGecko
 from modules.db.manager import Database
 from modules.ig.manager import Instagram
+from modules.exceptions import CommentValidationError
 from pathlib import Path
+import time
 import json
 
 
@@ -24,20 +26,9 @@ class CryptoNotifs:
 
         # TODO  instagram comments will have to be updated in a larger
         #       time periods than coin prices to avoid being flagged by IG.
-        self.get_instagram_comments()
+        # self.get_instagram_comments()
 
-        # get prices of the requested coins in db + save prices to db
-        #   get all requested prices from database
-        #   request price for all coins
-        #   add prices to database
-
-        comments = self.db.get_all_comments()
-        # TODO Need to extract coin name instead of coin symbol
-        coins_requested = [comment.data.coin_symbol for comment in comments]
-        currencies_requested = [comment.data.currency for comment in comments]
-
-        r = self.cg.get_price(ids=coins_requested, vs_currencies=currencies_requested)
-        print(r)
+        self.update_coins()
 
         # check if any desired condition is met
         #   get all price requests from db
@@ -80,14 +71,43 @@ class CryptoNotifs:
         comments = self.ig.api.media_comments(post.pk, amount=0)
         print(f"Fetched {len(comments)} comments.")
 
+        to_remove = []
         for comment in comments:
-            # Validate comment
-            if verify_comment(comment.text):
+            try:
                 self.db.insert_user(comment.user)
                 self.db.insert_comment(comment)
-            else:
-                # TODO Delete the comment
-                pass
+            except CommentValidationError:
+                print(
+                    f"INVALID COMMENT {comment}"
+                    f"Comment: {comment.text}"
+                )
+                # Append the comment for deletion
+                to_remove.append(comment)
+
+        if to_remove:
+            self.ig.api.comment_bulk_delete(
+                media_id=self.ig.api.media_id(post.pk),
+                comment_pks=[c.pk for c in comments]
+            )
+
+    def update_coins(self):
+        # get prices of the requested coins in db + save prices to db
+
+        #   add prices to database
+
+        # Get all requested coins/currencies from database
+        comments = self.db.get_all_comments()
+        coins_requested = set([comment.coin for comment in comments])
+        currencies_requested = set([comment.currency for comment in comments])
+
+        # TODO Custom get_price method that returns list of Price Classes
+         # Request price for all coins
+        r = self.cg.get_price(
+            ids=[coin.name for coin in coins_requested],
+            vs_currencies=list(currencies_requested)
+        )
+
+        # TODO Save prices to database
 
 
 if __name__ == '__main__':
