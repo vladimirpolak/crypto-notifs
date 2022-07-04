@@ -119,21 +119,27 @@ class Database:
             user = self.insert_user(new_comment.user)
 
             if not verify_comment(new_comment.text):
-                raise CommentValidationError
+                raise CommentValidationError("Comment failed format validation.")
 
-            comm_data = extract_data(new_comment.text)
-            coin = self.get_coin(symbol=comm_data[0])
+            coin_symbol, condition, target_value, req_currency = extract_data(new_comment.text)
+
+            coin = self.get_coin(symbol=coin_symbol)
+            currency = self.get_prices(req_currency)
+
+            if not currency and req_currency:
+                raise CommentValidationError(f"Cannot recognize requested currency: {req_currency}")
+
             if not coin:
-                raise CommentValidationError
+                raise CommentValidationError(f"Cannot recognize requested coin: {coin_symbol}")
 
             # Create new comment
             comm = CommentModel(
                 pk=new_comment.pk,
                 text=new_comment.text,
                 coin=coin,
-                condition=comm_data[1],
-                target_value=comm_data[2],
-                currency=comm_data[3],
+                condition=condition,
+                target_value=target_value,
+                currency=currency,
                 created_at=new_comment.created_at_utc,
                 content_type=new_comment.content_type,
                 status=new_comment.status
@@ -215,6 +221,9 @@ class Database:
         :return: list of CoinModel classes
         """
         return self.session.query(CoinModel).all()
+
+    def get_prices(self, currency) -> List[PriceModel]:
+        return self.session.query(PriceModel).filter_by(currency=currency).all()
 
 
 if __name__ == '__main__':
