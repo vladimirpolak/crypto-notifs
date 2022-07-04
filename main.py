@@ -26,7 +26,7 @@ class CryptoNotifs:
 
         # TODO  instagram comments will have to be updated in a larger
         #       time periods than coin prices to avoid being flagged by IG.
-        # self.get_instagram_comments()
+        self.get_instagram_comments()
 
         self.update_coins()
 
@@ -76,9 +76,10 @@ class CryptoNotifs:
             try:
                 self.db.insert_user(comment.user)
                 self.db.insert_comment(comment)
-            except CommentValidationError:
+            except CommentValidationError as e:
                 print(
-                    f"INVALID COMMENT {comment}"
+                    e,
+                    f"INVALID COMMENT {comment}\n"
                     f"Comment: {comment.text}"
                 )
                 # Append the comment for deletion
@@ -87,7 +88,7 @@ class CryptoNotifs:
         if to_remove:
             self.ig.api.comment_bulk_delete(
                 media_id=self.ig.api.media_id(post.pk),
-                comment_pks=[c.pk for c in comments]
+                comment_pks=[c.pk for c in to_remove]
             )
 
     def update_coins(self):
