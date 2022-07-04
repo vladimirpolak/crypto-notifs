@@ -22,10 +22,10 @@ def extract_data(comment) -> tuple:
     """
     pattern = re.compile("([a-zA-Z]+?)([<>])([0-9]+)([a-zA-Z]+)?")
     data = re.findall(pattern, comment)[0]
-    coin_symbol = data[0]
+    coin_symbol = data[0].lower()
     condition = data[1]
     target_value = data[2]
-    currency = data[3]
+    currency = data[3].lower()
     return coin_symbol, condition, target_value, currency
 
 
