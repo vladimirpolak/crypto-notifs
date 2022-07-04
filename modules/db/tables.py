@@ -35,7 +35,7 @@ class CommentModel(Base):
     coin_id = Column(Integer, ForeignKey("coin.id"))
     coin = relationship("CoinModel", back_populates="comments")
     condition = Column(String)
-    target_value = Column(String)
+    target_value = Column(Float)
     currency = Column(String)
 
     user_id = Column(Integer, ForeignKey("user.id"))
