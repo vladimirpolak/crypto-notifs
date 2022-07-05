@@ -4,8 +4,9 @@ from modules.db.manager import Database
 from modules.ig.manager import Instagram
 from modules.exceptions import CommentValidationError
 from pathlib import Path
-import time
 import json
+
+UPDATE_INSTA = False
 
 
 class CryptoNotifs:
@@ -19,14 +20,14 @@ class CryptoNotifs:
         self.requests = []
 
     def main(self):
-        # If there are no coins in the database
+        # If there are no coins in the database get info for all coins
         if not self.db.get_coins():
-            # Get info for all coins
             self.init_coins()
 
         # TODO  instagram comments will have to be updated in a larger
         #       time periods than coin prices to avoid being flagged by IG.
-        self.get_instagram_comments()
+        if UPDATE_INSTA:
+            self.get_instagram_comments()
 
         self.update_coins()
 
@@ -48,15 +49,15 @@ class CryptoNotifs:
         in order to alleviate the CoinGecko API.
         """
         # Request detailed coins info from coingecko
-        coins = self.cg.get_detailed_coins()
+        cg_coins = self.cg.get_detailed_coins()
 
-        for coin in coins:
+        for coin in cg_coins:
 
             # Add every coin and it's prices to database
-            self.db.insert_new_coin(coin)
+            c = self.db.insert_new_coin(coin)
             for price in coin.price:
                 self.db.insert_price(
-                    coin_symbol=coin.symbol,
+                    coin=c,
                     new_price=price
                 )
         pass
@@ -92,23 +93,28 @@ class CryptoNotifs:
             )
 
     def update_coins(self):
-        # get prices of the requested coins in db + save prices to db
-
-        #   add prices to database
-
+        """
+        Updates coins based on comment requests saved in database.
+        """
         # Get all requested coins/currencies from database
         comments = self.db.get_all_comments()
-        coins_requested = set([comment.coin for comment in comments])
+        coins_requested = set([comment.coin.name for comment in comments])
         currencies_requested = set([comment.currency for comment in comments])
 
-        # TODO Custom get_price method that returns list of Price Classes
-         # Request price for all coins
-        r = self.cg.get_price(
-            ids=[coin.name for coin in coins_requested],
-            vs_currencies=list(currencies_requested)
+        # Request price for all coins
+        data = self.cg.get_prices(
+            coin_names=list(coins_requested),
+            currencies=list(currencies_requested)
         )
 
-        # TODO Save prices to database
+        # Save updated prices to database
+        for coin_name, prices in data.items():
+            coin = self.db.get_coin(name=coin_name)
+            for price in prices:
+                self.db.insert_price(
+                    coin=coin,
+                    new_price=price
+                )
 
 
 if __name__ == '__main__':
