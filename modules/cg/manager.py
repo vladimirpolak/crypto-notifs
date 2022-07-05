@@ -1,5 +1,6 @@
 from pycoingecko import CoinGeckoAPI as CG
 from modules.cg.models import Price, Coin
+from collections import defaultdict
 from typing import List
 
 
@@ -20,7 +21,6 @@ from typing import List
 #     coin_id='bitcoin',
 #     currency='usd'
 # )
-
 
 class CoinGecko(CG):
     def get_detailed_coins(self) -> List[Coin]:
@@ -43,6 +43,24 @@ class CoinGecko(CG):
                 price=price
             )
             output.append(coin)
+
+        return output
+
+    def get_prices(self, coin_names: list, currencies: list) -> dict:
+        r = self.get_price(
+            ids=coin_names,
+            vs_currencies=currencies
+        )
+
+        output = defaultdict(list)
+        for coin, prices in r.items():
+            for currency, value in prices.items():
+                output[coin].append(
+                    Price(
+                        currency=currency,
+                        value=value
+                    )
+                )
 
         return output
 
