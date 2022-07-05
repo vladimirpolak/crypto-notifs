@@ -10,7 +10,8 @@ UPDATE_INSTA = False
 
 
 class CryptoNotifs:
-    def __init__(self, coingecko: CoinGecko,
+    def __init__(self,
+                 coingecko: CoinGecko,
                  database: Database,
                  instagram: Instagram
                  ):
@@ -64,7 +65,7 @@ class CryptoNotifs:
 
     def get_instagram_comments(self):
         """
-        Get comments of an instagram post that holds targetted comments.
+        Get comments from the instagram post that holds targetted comments.
         """
         # Get first item of user's media (pinned post is first)
         post = self.ig.api.user_medias(self.ig.api.user_id)[0]
