@@ -47,6 +47,13 @@ class CoinGecko(CG):
         return output
 
     def get_prices(self, coin_names: list, currencies: list) -> dict:
+        """
+        Fetches requested values of coins/currencies.
+
+        :param coin_names: list('bitcoin', 'ethereum'...)
+        :param currencies: list('usd', 'eur'...)
+        :return: dict('coin_name': list[Price]}
+        """
         r = self.get_price(
             ids=coin_names,
             vs_currencies=currencies
@@ -63,6 +70,3 @@ class CoinGecko(CG):
                 )
 
         return output
-
-
-# coins = cg.get_coins_list() # Get basic list of coins
