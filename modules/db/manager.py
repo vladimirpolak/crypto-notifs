@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import List
 from modules.exceptions import CommentValidationError
 from modules.comment_validation import extract_data, verify_comment
+from datetime import datetime
 
 from sqlalchemy import create_engine
 
@@ -183,8 +184,10 @@ class Database:
         # Create new price's model
         price = PriceModel(
             currency=new_price.currency,
-            value=new_price.value
+            value=new_price.value,
         )
+        # TODO Create timestamp when creating/updating price
+        # price.last_updated = datetime.utcnow()
 
         # Update an existing price
         for p in coin.prices:
