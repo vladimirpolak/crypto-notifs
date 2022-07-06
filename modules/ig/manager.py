@@ -80,6 +80,11 @@ class CustomClient(Client):
 
         return media[::step]
 
+    def get_target_post(self):
+        # Get first item of user's media (pinned post is first)
+        time.sleep(random.uniform(4, 7))
+        return self.user_medias(self.user_id)[0]
+
 
 class Instagram:
     def __init__(self,
@@ -88,6 +93,10 @@ class Instagram:
                  ):
         self.username = ig_username or getenv("IG_USERNAME")
         self.password = ig_password or getenv("IG_PASSWORD")
+
+        if not self.username or not self.password:
+            raise Exception("IG Credentials not provided!")
+
         self.__login()
 
     def __login(self):
