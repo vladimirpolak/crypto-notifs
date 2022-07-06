@@ -22,6 +22,14 @@ class UserModel(Base):
         self.username = username
         self.fullname = fullname
 
+    def __str__(self):
+        return f"pk: {self.pk}, username: {self.username}, fullname: {self.fullname}"
+
+    def __repr__(self):
+        return f"UserModel(" \
+               f"{self.pk}, {self.username}, {self.fullname}" \
+               f")"
+
 
 class CommentModel(Base):
     """Instagram comment model."""
@@ -60,10 +68,18 @@ class CommentModel(Base):
         self.coin = coin
         self.condition = condition
         self.target_value = target_value
-        self.currency = currency or "usd" # Setting default currency 'usd'
+        self.currency = currency or "usd"  # Setting default currency 'usd'
         self.created_at = created_at
         self.content_type = content_type
         self.status = status
+
+    def __str__(self):
+        return f"pk: {self.pk}, comment: {self.text}, created at: {self.created_at}"
+
+    def __repr__(self):
+        return f"CommentModel(" \
+               f"{self.pk}, {self.text}, {self.created_at}, {self.content_type}, {self.status}" \
+               f")"
 
 
 class CoinModel(Base):
@@ -80,6 +96,14 @@ class CoinModel(Base):
         self.symbol = symbol
         self.name = name
 
+    def __str__(self):
+        return f"name: {self.name}, symbol: {self.symbol}"
+
+    def __repr__(self):
+        return f"CoinModel(" \
+               f"{self.symbol}, {self.name}" \
+               f")"
+
 
 class PriceModel(Base):
     """Crypto coin's price model."""
@@ -95,3 +119,11 @@ class PriceModel(Base):
     def __init__(self, currency, value):
         self.currency = currency
         self.value = value
+
+    def __str__(self):
+        return f"{self.coin.name} {self.value} {self.currency.upper()}"
+
+    def __repr__(self):
+        return f"PriceModel(" \
+               f"{self.value}, {self.currency}" \
+               f")"
