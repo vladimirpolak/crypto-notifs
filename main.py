@@ -1,9 +1,12 @@
-from modules.comment_validation import verify_comment
 from modules.cg.manager import CoinGecko
 from modules.db.manager import Database
+from modules.db.tables import CommentModel
 from modules.ig.manager import Instagram
 from modules.exceptions import CommentValidationError
+from modules.message import create_message
 from pathlib import Path
+import time
+import random
 import json
 
 UPDATE_INSTA = False
@@ -32,15 +35,18 @@ class CryptoNotifs:
 
         self.update_coins()
 
-        # check if any desired condition is met
-        #   get all price requests from db
-        #   check if any condition is met
+        comments_to_notify = self.compare_requests_prices()
 
-        # if condition is met, notify the particular user through dm
-        #   get comment's user
-        #   get user's pk
-        #   get existing thread for user or create new dm
-        pass
+        if comments_to_notify:
+            for comment in comments_to_notify:
+                self.send_message(comment)
+                self.db.delete_comment(comment)
+
+            print(f"Deleting comments: {comments_to_notify}")
+            self.ig.api.comment_bulk_delete(
+                media_id=self.ig.api.media_id(self.ig.api.get_target_post().pk),
+                comment_pks=[comment.pk for comment in comments_to_notify]
+            )
 
     def init_coins(self):
         """
@@ -61,14 +67,14 @@ class CryptoNotifs:
                     coin=c,
                     new_price=price
                 )
-        pass
 
     def get_instagram_comments(self):
         """
         Get comments from the instagram post that holds targetted comments.
         """
-        # Get first item of user's media (pinned post is first)
-        post = self.ig.api.user_medias(self.ig.api.user_id)[0]
+        # Get first (pinned) post
+        post = self.ig.api.get_target_post()
+
         # Extract comments
         comments = self.ig.api.media_comments(post.pk, amount=0)
         print(f"Fetched {len(comments)} comments.")
@@ -117,6 +123,62 @@ class CryptoNotifs:
                     new_price=price
                 )
 
+    def compare_requests_prices(self) -> list:
+        """
+        Checks user defined conditions against current coin prices/currencies.
+        Returns comments that met the condition defined.
+
+        :return: list(CommentModel)
+        """
+        comments = self.db.get_all_comments()
+
+        to_notify = []
+        for comment in comments:
+            requested_currency = comment.currency
+
+            # TODO Use/Convert 'coin.prices' as dictionary where we can select specific price based on currency
+            #   in order to avoid looping through all prices.
+            # https://stackoverflow.com/questions/11578070/sqlalchemy-instrumentedlist-object-has-no-attribute-filter
+            for price in comment.coin.prices:
+                if price.currency == requested_currency:
+                    curr_coin_value = price.value
+                    target_coin_value = comment.target_value
+                    condition = comment.condition
+
+                    if ((condition == ">"
+                         and curr_coin_value > target_coin_value)
+                            or (condition == "<"
+                                and curr_coin_value < target_coin_value)):
+
+                        to_notify.append(comment)
+                        print(f"Condition MET: {comment.coin.name.upper()} "
+                              f"{curr_coin_value}{price.currency} {condition} {target_coin_value}{comment.currency}\n"
+                              f"Comment: {comment}\n"
+                              f"User: {comment.user}")
+        return to_notify
+
+    def send_message(self, comment: CommentModel):
+        """
+        Used to send a direct message to a user on Instagram.
+        :param comment: CommentModel
+        :return:
+        """
+        msg = create_message(
+            username=comment.user.fullname,
+            coin_name=comment.coin.name,
+            value=[price.value for price in comment.coin.prices if price.currency == comment.currency][0],
+            currency=comment.currency
+        )
+        msg = msg + " You are getting this message because you requested coin tracking with CryptoNotifs."
+
+        time.sleep(random.uniform(10, 15))  # TIMEOUT
+        self.ig.api.direct_send(
+            text=msg,
+            user_ids=[comment.user.pk]
+        )
+        print(f"Message sent. {comment}")
+        time.sleep(random.uniform(4, 7))  # TIMEOUT
+
 
 if __name__ == '__main__':
     # CoinGecko API init
@@ -125,13 +187,14 @@ if __name__ == '__main__':
     # Database interface init
     db = Database()
 
-    # Load instagram credentials
+    # Instagram API init
     try:
+        # Load instagram credentials
         ig_credentials = json.load(Path("credentials.json").open("r"))
     except FileNotFoundError:
-        ig_credentials = None
-    # Instagram API init
-    ig = Instagram(**ig_credentials)
+        ig = Instagram()
+    else:
+        ig = Instagram(**ig_credentials)
 
     crypto_notifs = CryptoNotifs(cg, db, ig)
     crypto_notifs.main()
