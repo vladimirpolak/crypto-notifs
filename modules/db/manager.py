@@ -150,6 +150,16 @@ class Database:
 
         return comm
 
+    def delete_comment(self, comment: CommentModel):
+        """
+        Delete single comment record.
+
+        :param comment: CommentModel
+        """
+        print(f"[DB] Deleting comment: {comment}")
+        self.session.delete(comment)
+        self.session.commit()
+
     # ----------------------- Coins/Prices -----------------------
     def insert_new_coin(self, new_coin: Coin) -> CoinModel:
         """
