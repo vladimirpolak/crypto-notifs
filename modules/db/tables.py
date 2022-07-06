@@ -1,3 +1,5 @@
+import datetime
+
 from sqlalchemy import Column, Integer, String, DateTime, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -5,6 +7,53 @@ from sqlalchemy import ForeignKey
 
 
 Base = declarative_base()
+
+
+class CoinModel(Base):
+    """Crypto coin model."""
+    __tablename__ = "coin"
+
+    id = Column(Integer, primary_key=True)
+    symbol = Column(String, unique=True)
+    name = Column(String, unique=True)
+    prices = relationship("PriceModel", back_populates="coin")
+    comments = relationship("CommentModel", back_populates="coin")
+
+    def __init__(self, symbol: str, name: str):
+        self.symbol = symbol
+        self.name = name
+
+    def __str__(self):
+        return f"name: {self.name}, symbol: {self.symbol}"
+
+    def __repr__(self):
+        return f"CoinModel(" \
+               f"{self.symbol}, {self.name}" \
+               f")"
+
+
+class PriceModel(Base):
+    """Crypto coin's price model."""
+    __tablename__ = "price"
+
+    id = Column(Integer, primary_key=True)
+    coin_id = Column(Integer, ForeignKey("coin.id"))
+    coin = relationship("CoinModel", back_populates="prices")
+    currency = Column(String)
+    value = Column(Float)
+    last_updated = Column(DateTime)
+
+    def __init__(self, currency: str, value: float):
+        self.currency = currency
+        self.value = value
+
+    def __str__(self):
+        return f"{self.coin.name} {self.value} {self.currency.upper()}"
+
+    def __repr__(self):
+        return f"PriceModel(" \
+               f"{self.value}, {self.currency}" \
+               f")"
 
 
 class UserModel(Base):
@@ -17,7 +66,7 @@ class UserModel(Base):
     fullname = Column(String)
     comments = relationship("CommentModel", back_populates="user")
 
-    def __init__(self, pk, username, fullname):
+    def __init__(self, pk: str, username: str, fullname: str):
         self.pk = pk
         self.username = username
         self.fullname = fullname
@@ -53,15 +102,15 @@ class CommentModel(Base):
     status = Column(String)
 
     def __init__(self,
-                 pk,
-                 text,
-                 coin,
-                 condition,
-                 target_value,
-                 currency,
-                 created_at,
-                 content_type,
-                 status
+                 pk: str,
+                 text: str,
+                 coin: CoinModel,
+                 condition: str,
+                 target_value: float,
+                 currency: str,
+                 created_at: datetime.datetime,
+                 content_type: str,
+                 status: str
                  ):
         self.pk = pk
         self.text = text
@@ -79,51 +128,4 @@ class CommentModel(Base):
     def __repr__(self):
         return f"CommentModel(" \
                f"{self.pk}, {self.text}, {self.created_at}, {self.content_type}, {self.status}" \
-               f")"
-
-
-class CoinModel(Base):
-    """Crypto coin model."""
-    __tablename__ = "coin"
-
-    id = Column(Integer, primary_key=True)
-    symbol = Column(String, unique=True)
-    name = Column(String, unique=True)
-    prices = relationship("PriceModel", back_populates="coin")
-    comments = relationship("CommentModel", back_populates="coin")
-
-    def __init__(self, symbol, name):
-        self.symbol = symbol
-        self.name = name
-
-    def __str__(self):
-        return f"name: {self.name}, symbol: {self.symbol}"
-
-    def __repr__(self):
-        return f"CoinModel(" \
-               f"{self.symbol}, {self.name}" \
-               f")"
-
-
-class PriceModel(Base):
-    """Crypto coin's price model."""
-    __tablename__ = "price"
-
-    id = Column(Integer, primary_key=True)
-    coin_id = Column(Integer, ForeignKey("coin.id"))
-    coin = relationship("CoinModel", back_populates="prices")
-    currency = Column(String)
-    value = Column(Float)
-    last_updated = Column(DateTime)
-
-    def __init__(self, currency, value):
-        self.currency = currency
-        self.value = value
-
-    def __str__(self):
-        return f"{self.coin.name} {self.value} {self.currency.upper()}"
-
-    def __repr__(self):
-        return f"PriceModel(" \
-               f"{self.value}, {self.currency}" \
                f")"
