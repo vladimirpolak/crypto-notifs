@@ -4,12 +4,14 @@ from modules.db.tables import CommentModel
 from modules.ig.manager import Instagram
 from modules.exceptions import CommentValidationError
 from modules.message import create_message
+from dotenv import load_dotenv
 from pathlib import Path
 import time
 import random
 import json
 
-UPDATE_INSTA = False
+UPDATE_INSTA = True
+load_dotenv()
 
 
 class CryptoNotifs:
@@ -190,7 +192,8 @@ if __name__ == '__main__':
     # Instagram API init
     try:
         # Load instagram credentials
-        ig_credentials = json.load(Path("credentials.json").open("r"))
+        path = Path().cwd() / "config" / "credentials.json"
+        ig_credentials = json.load(path.open("r"))
     except FileNotFoundError:
         ig = Instagram()
     else:

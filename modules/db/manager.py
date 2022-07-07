@@ -237,7 +237,3 @@ class Database:
 
     def get_prices(self, currency) -> List[PriceModel]:
         return self.session.query(PriceModel).filter_by(currency=currency).all()
-
-
-if __name__ == '__main__':
-    db = Database()

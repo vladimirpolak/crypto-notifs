@@ -1,7 +1,6 @@
 from instagrapi.exceptions import ClientError, ClientNotFoundError, MediaNotFound
 from instagrapi.extractors import extract_comment
 from instagrapi.types import Comment, Media
-from dotenv import load_dotenv
 from instagrapi import Client
 from typing import List
 from pathlib import Path
@@ -13,8 +12,6 @@ try:
 except ImportError:
     DeviceSettings = None
     pass
-
-load_dotenv()
 
 
 class CustomClient(Client):
@@ -80,8 +77,11 @@ class CustomClient(Client):
 
         return media[::step]
 
-    def get_target_post(self):
-        # Get first item of user's media (pinned post is first)
+    def get_target_post(self) -> Media:
+        """
+        Used to get first (pinned) item of user's media.
+        :return: Media
+        """
         time.sleep(random.uniform(4, 7))
         return self.user_medias(self.user_id)[0]
 
@@ -101,12 +101,8 @@ class Instagram:
 
     def __login(self):
         """Establishes connection to Instagram API."""
-        # get_settings()	            dict	Return settings dict
-        # set_settings(settings: dict)	bool	Set session settings
-        # load_settings(path: Path)	    dict	Load session settings from file
-        # dump_settings(path: Path)	    bool	Serialize and save session settings to file
 
-        cached_settings = Path().cwd() / "cached_settings.json"
+        cached_settings = Path().cwd() / "config" / "cached_settings.json"
 
         # Login with saved settings
         if cached_settings.exists():

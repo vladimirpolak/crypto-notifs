@@ -4,24 +4,6 @@ from collections import defaultdict
 from typing import List
 
 
-# btc_price = cg.get_price(ids='bitcoin', vs_currencies='usd')
-# print(btc_price)
-
-
-# def get_price(coin_id: str, currency: str = "usd") -> int:
-#     r = cg.get_price(ids=coin_id, vs_currencies=currency)
-#     return int(r[coin_id][currency])
-
-# Multiple coins/currencies in one request
-# coins = cg.get_price(ids=["bitcoin", "ethereum"], vs_currencies=["usd", "eur"])
-# print(coins)
-
-# Price of single coin
-# price = get_price(
-#     coin_id='bitcoin',
-#     currency='usd'
-# )
-
 class CoinGecko(CG):
     def get_detailed_coins(self) -> List[Coin]:
         """
