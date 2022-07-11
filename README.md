@@ -1,7 +1,7 @@
 <div align="center">
     <h1>CryptoNotifs</h1>
     <a href="https://www.instagram.com/crypto.notifs/">
-    <img src="images/banner.png" alt="#">
+    <img src="images/banner.png" alt="#" width="75%">
     </a>
 </div>
 
