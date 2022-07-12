@@ -160,6 +160,14 @@ class Database:
         self.session.delete(comment)
         self.session.commit()
 
+    def delete_all_comments(self):
+        are_you_sure = input("Are you sure you want to delete all comments from the DB? [Y/N]:").upper()
+
+        if are_you_sure == "Y":
+            comments = self.get_all_comments()
+            for c in comments:
+                self.delete_comment(c)
+
     # ----------------------- Coins/Prices -----------------------
     def insert_new_coin(self, new_coin: Coin) -> CoinModel:
         """
