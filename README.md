@@ -25,7 +25,7 @@ To use the tracker simply add a comment under the first (pinned) post in profile
 Your comment has to follow the formatting as follows: <br>
 
    ```
-   [cryptocoin_symbol][condition(</>)][target_value][optional currency]
+   [cryptocoin_symbol][condition(</>)][target_value][currency (optional)]
    ```
 
 _Cryptocoin **names/symbols** are in a description of the post.<br>
