@@ -6,12 +6,17 @@ from modules.exceptions import CommentValidationError
 from modules.message import create_message
 from dotenv import load_dotenv
 from pathlib import Path
+import schedule
 import time
 import random
 import json
+import os
 
-UPDATE_INSTA = True
 load_dotenv()
+
+
+def clear_console():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 
 class CryptoNotifs:
@@ -26,16 +31,32 @@ class CryptoNotifs:
         self.requests = []
 
     def main(self):
+        schedule.every(60).seconds.do(self.run)  # update coin prices every minute
+        schedule.every(22*60).to(26*60).minutes.do(self.run, update_insta=True)  # update instagram comments every 22-26 hours
+
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
+
+    def run(self,
+            update_insta: bool = False,
+            initialize_db: bool = False,
+            update_coins: bool = True
+            ):
+
+        clear_console()
+
         # If there are no coins in the database get info for all coins
-        if not self.db.get_coins():
+        if not self.db.get_coins() or initialize_db:
             self.init_coins()
 
         # TODO  instagram comments will have to be updated in a larger
         #       time periods than coin prices to avoid being flagged by IG.
-        if UPDATE_INSTA:
+        if update_insta:
             self.get_instagram_comments()
 
-        self.update_coins()
+        if update_coins:
+            self.update_coins()
 
         comments_to_notify = self.compare_requests_prices()
 
@@ -44,7 +65,7 @@ class CryptoNotifs:
                 self.send_message(comment)
                 self.db.delete_comment(comment)
 
-            print(f"Deleting comments: {comments_to_notify}")
+            print(f"[IG] Deleting comments: {comments_to_notify}")
             self.ig.api.comment_bulk_delete(
                 media_id=self.ig.api.media_id(self.ig.api.get_target_post().pk),
                 comment_pks=[comment.pk for comment in comments_to_notify]
@@ -79,7 +100,7 @@ class CryptoNotifs:
 
         # Extract comments
         comments = self.ig.api.media_comments(post.pk, amount=0)
-        print(f"Fetched {len(comments)} comments.")
+        print(f"[IG] Fetched {len(comments)} comments.")
 
         to_remove = []
         for comment in comments:
