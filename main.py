@@ -50,8 +50,6 @@ class CryptoNotifs:
         if not self.db.get_coins() or initialize_db:
             self.init_coins()
 
-        # TODO  instagram comments will have to be updated in a larger
-        #       time periods than coin prices to avoid being flagged by IG.
         if update_insta:
             self.get_instagram_comments()
 
